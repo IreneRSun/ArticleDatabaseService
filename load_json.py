@@ -1,4 +1,6 @@
 from utils import get_collection
+from time import time
+import math
 import json
 
 BATCH_SIZE = 10000
@@ -25,6 +27,8 @@ def load_json():
   
   dblp.drop()
 
+  start_time = time()
+
   current_batch = []
   with f:
     for line in f:
@@ -37,7 +41,8 @@ def load_json():
   if len(current_batch) > 0:
     dblp.insert_many(current_batch)
 
-  print("Document Store constructed!")
+  seconds_to_construct = math.ceil(time() - start_time)
+  print(f"Document store constructed in {seconds_to_construct}s!")
       
 if __name__ == "__main__":
   load_json()
