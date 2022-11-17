@@ -1,6 +1,8 @@
 from utils import get_collection
 import json
 
+BATCH_SIZE = 10000
+
 def load_json():
   file = input("Enter JSON file name: ")
   try:
@@ -23,9 +25,17 @@ def load_json():
   
   dblp.drop()
 
+  current_batch = []
   with f:
     for line in f:
-      dblp.insert_one(json.loads(line.strip()))
+      current_batch.append(json.loads(line.strip()))
+
+      if len(current_batch) == BATCH_SIZE:
+        dblp.insert_many(current_batch)
+        current_batch = []
+
+  if len(current_batch) > 0:
+    dblp.insert_many(current_batch)
 
   print("Document Store constructed!")
       
