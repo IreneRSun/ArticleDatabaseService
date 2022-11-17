@@ -1,8 +1,8 @@
 from utils import get_choice
 
 class Store:
-  def __init__(self):
-    pass
+  def __init__(self, port):
+    self.port = port
 
   def show_main_menu(self):
     while True:
