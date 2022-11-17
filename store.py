@@ -52,6 +52,7 @@ class Store:
     pass
 
   def show_add_article(self):
+    # Set up data
     abstract = None
     authors = input("Enter names of authors separate by a comma and a white space: ").split(", ")
     n_citations = 0
@@ -66,6 +67,7 @@ class Store:
       if self.collection.find_one({"id": id}) == None:
         break
     
+    # Insert data
     data = {
       "abstract": abstract,
       "authors": authors,
@@ -76,7 +78,4 @@ class Store:
       "year": year,
       "id": id
     }
-    
     self.collection.insert_one(data)
-
-    
