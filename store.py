@@ -1,8 +1,13 @@
-from utils import get_choice
+from utils import get_choice, get_collection
 
 class Store:
   def __init__(self, port):
-    self.port = port
+    # Acquire MongoDB collection
+    try:
+      self.collection = get_collection(port)
+    except Exception as err:
+      print("Failed to establish MongoDB collection while constructing store!", err)
+      quit()
 
   def show_main_menu(self):
     while True:

@@ -1,4 +1,17 @@
 import os
+import pymongo
+
+def get_collection(port):
+  """
+    Utility function to acquire MongoDB connection.
+  """
+  client = pymongo.MongoClient("localhost", port, serverSelectionTimeoutMS = 2000)
+  client.server_info()
+
+  database = client["291db"]
+  collection = database["dblp"]
+
+  return collection
 
 def display_line():
   print("-" * 80)

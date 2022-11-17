@@ -1,4 +1,4 @@
-import pymongo
+from utils import get_collection
 import json
 
 def main():
@@ -16,19 +16,18 @@ def main():
     quit()
 
   try:
-    client = pymongo.MongoClient("localhost", port, serverSelectionTimeoutMS = 2000)
-    client.server_info()
-  except:
-    print("Connection error!")
+    dblp = get_collection(port)
+  except Exception as err:
+    print("Connection error!", err)
     quit()
   
-  mini_project_2 = client["291db"]
-  mini_project_2.dblp.drop()
-  dblp = mini_project_2.dblp
+  dblp.drop()
 
   with f:
     for line in f:
       dblp.insert_one(json.loads(line.strip()))
+
+  print("Document Store constructed!")
       
 if __name__ == "__main__":
   main()
