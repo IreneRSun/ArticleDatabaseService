@@ -15,18 +15,35 @@ class Store:
       ]
       chosen_choice = get_choice("What would you like to do?", options, allow_backtracking=False)
 
+      # Run action selected
       if chosen_choice == 0:
         # search for articles
-        pass
+        self.show_article_search()
+
       elif chosen_choice == 1:
         # search for authors
-        pass
+        self.show_author_search()
+
       elif chosen_choice == 2:
         # list the venues
-        pass
+        self.show_list_venues()
+
       elif chosen_choice == 3:
         # add an article
-        pass
+        self.show_add_article()
+
       elif chosen_choice == 4:
         # quit program
         return
+
+  def show_article_search(self):
+    pass
+
+  def show_author_search(self):
+    pass
+
+  def show_list_venues(self):
+    pass
+
+  def show_add_article(self):
+    pass
