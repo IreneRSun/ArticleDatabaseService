@@ -1,4 +1,5 @@
 from utils import get_choice, get_collection
+import uuid
 
 class Store:
   def __init__(self, port):
@@ -51,4 +52,31 @@ class Store:
     pass
 
   def show_add_article(self):
-    pass
+    abstract = None
+    authors = input("Enter names of authors separate by a comma and a white space: ").split(", ")
+    n_citations = 0
+    references = []
+    title = input("Enter title of the article: ")
+    venue = None
+    year = input("Enter year of the article: ")
+    
+    # Generate unique article id
+    while True:
+      id = str(uuid.uuid4())
+      if self.collection.find_one({"id": id}) == None:
+        break
+    
+    data = {
+      "abstract": abstract,
+      "authors": authors,
+      "n_citations": n_citations,
+      "references": references,
+      "title": title,
+      "venue": venue,
+      "year": year,
+      "id": id
+    }
+    
+    self.collection.insert_one(data)
+
+    
