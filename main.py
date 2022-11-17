@@ -1,5 +1,8 @@
+from store import Store
+
 def main():
-  pass
+  store = Store()
+  store.show_main_menu()
 
 if __name__ == "__main__":
   main()
