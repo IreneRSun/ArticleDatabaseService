@@ -22,7 +22,7 @@ def main():
     print("Connection error!")
     quit()
   
-  mini_project_2 = client.mini_project_2
+  mini_project_2 = client["291db"]
   mini_project_2.dblp.drop()
   dblp = mini_project_2.dblp
 
