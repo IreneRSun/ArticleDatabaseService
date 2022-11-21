@@ -7,6 +7,7 @@ import json
 BATCH_SIZE = 10000
 
 def load_json():
+  # Get JSON file
   file = input("Enter JSON file name: ")
   try:
     f = open(file, 'r')
@@ -14,12 +15,14 @@ def load_json():
     print("The file "+ file + " does not exist!")
     quit()
 
+  # Get port number
   try:
     port = int(input("Enter port number: "))
   except ValueError:
     print("Invalid input!")
     quit()
 
+  # Acquire MongoDB collection
   try:
     dblp = get_collection(port)
   except Exception as err:
@@ -30,6 +33,7 @@ def load_json():
 
   start_time = time()
 
+  # Insert JSON file into MongoDB
   current_batch = []
   with f:
     for line in f:
@@ -42,12 +46,33 @@ def load_json():
   if len(current_batch) > 0:
     dblp.insert_many(current_batch)
 
+  # Create index
+  dblp.aggregate([
+        {"$addFields": {"year_str": {"$toString": "$year"}}},
+        {"$out": "dblp"}
+  ])
   
-  # TODO: include other fields
-  dblp.create_index(name="text_search", keys=[("authors", TEXT)], default_language="none", language_override="none")
+  dblp.create_index(
+      keys = [
+          ("title", TEXT),
+          ("authors", TEXT),
+          ("abstract", TEXT),
+          ("venue", TEXT),
+          ("year_str", TEXT)
+      ],
+      default_language='none'
+  )
+  
+  dblp.create_index(
+      keys = [
+          ("references", 1)
+      ],
+      default_language='none'
+  )
 
   seconds_to_construct = math.ceil(time() - start_time)
   print(f"Document store constructed in {seconds_to_construct}s!")
+  
       
 if __name__ == "__main__":
   load_json()
