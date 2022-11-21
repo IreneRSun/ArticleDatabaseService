@@ -2,6 +2,9 @@ import os
 import pymongo
 
 class PaginationData:
+  """
+    Utility class for pagination calculations
+  """
   def __init__(self, options = [], page_limit = None):
     self.options = options
     self.page_limit = page_limit
@@ -22,12 +25,17 @@ class PaginationData:
     self.page -= 1
 
   def get_option_index(self, choice):
+    """
+      Given a 0-index choice based on the displayed options and indexes, 
+      return the option index associated with it.
+    """
     assert choice >= 0 and choice < len(self.get_options())
     if self.page_limit == None:
       return choice
     return self.page * self.page_limit + choice
 
   def get_options(self):
+    """ Return all options to list on the current page. """
     if self.page_limit == None:
       return self.options
 
@@ -36,9 +44,7 @@ class PaginationData:
     return self.options[start_option_index:end_option_index]
 
 def get_collection(port):
-  """
-    Utility function to acquire MongoDB connection.
-  """
+  """ Utility function to acquire MongoDB connection. """
   client = pymongo.MongoClient("localhost", port, serverSelectionTimeoutMS = 2000)
   client.server_info()
 
@@ -48,6 +54,7 @@ def get_collection(port):
   return collection
 
 def get_keyword():
+  """ Retrieve a single keyword from the user. """
   clear()
   while True:
     inp = input("Enter a single keyword you would like to search for: ")
@@ -83,8 +90,10 @@ def show_list(desc = None, options = [], page_limit = None):
     if desc != None:
       print(desc)
     
+    # get options to display
     displayed_options = pagination.get_options()
 
+    # do we need to show the prev/next options?
     if pagination.has_next_page():
       print("Type next to retrieve the next page")
     if pagination.has_prev_page():
@@ -92,12 +101,14 @@ def show_list(desc = None, options = [], page_limit = None):
     print("Enter a blank line to go to the previous menu")
     display_line()
 
+    # display options
     for line in displayed_options:
       print(line)
 
     # Get user input
     answer = input()
     
+    # user input handlers
     clear()
     if answer == "next" and pagination.has_next_page():
       pagination.next_page()
@@ -106,6 +117,7 @@ def show_list(desc = None, options = [], page_limit = None):
       pagination.prev_page()
       continue
 
+    # exit condition
     if answer.strip() == "":
       return
 
