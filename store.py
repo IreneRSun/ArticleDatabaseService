@@ -65,12 +65,12 @@ class Store:
     venue = None
     year = input("Enter year of the article: ")
     
-    # Generate unique article id
+    # Ask for unique article id
     while True:
-      id = str(uuid.uuid4())
+      id = input("Enter ID of the article: ")
       if self.collection.find_one({"id": id}) == None:
         break
-    
+
     # Insert data
     data = {
       "abstract": abstract,
