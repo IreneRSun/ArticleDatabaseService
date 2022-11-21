@@ -1,4 +1,5 @@
-from utils import get_choice, get_collection
+from utils import get_choice, get_collection, get_keyword
+from author_search import AuthorSearchQuery
 import uuid
 
 class Store:
@@ -12,14 +13,14 @@ class Store:
 
   def show_main_menu(self):
     while True:
-      options = [
+      # Which menu option does the user want to choose?
+      chosen_choice = get_choice("What would you like to do?", [
         "Search for articles",
         "Search for authors",
         "List the venues",
         "Add an article",
         "Quit"
-      ]
-      chosen_choice = get_choice("What would you like to do?", options, allow_backtracking=False)
+      ], allow_backtracking=False)
 
       # Run action selected
       if chosen_choice == 0:
@@ -46,7 +47,10 @@ class Store:
     pass
 
   def show_author_search(self):
-    pass
+    keyword = get_keyword()
+    if keyword != None:
+      query = AuthorSearchQuery(self.collection, keyword)
+      query.display_results()
 
   def show_list_venues(self):
     pass

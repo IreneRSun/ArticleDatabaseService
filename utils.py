@@ -13,8 +13,31 @@ def get_collection(port):
 
   return collection
 
+def get_keyword():
+  clear()
+  while True:
+    inp = input("Enter a single keyword you would like to search for: ")
+    if inp.strip() == "":
+      return None
+
+    parts = inp.split()
+    if len(parts) > 1:
+      clear()
+      print("Please only enter 1 keyword!")
+      continue
+
+    return parts[0]
+
 def display_line():
   print("-" * 80)
+
+def show_list(desc = None, options = [], page_limit = None):
+  clear()
+
+  current_page = 0
+  while True:
+    if desc != None:
+      print(desc)
 
 def get_choice(desc = None, options = [], allow_backtracking = True, page_limit = None):
   """
@@ -73,8 +96,11 @@ def get_choice(desc = None, options = [], allow_backtracking = True, page_limit 
         if current_page > 0:
           print("Type prev to retrieve the prev page")
 
+    if allow_backtracking:
+      print("Enter a blank line or select the back option to go to the previous menu")
+
     # Print line
-    if desc != None:
+    if desc != None or allow_backtracking:
       display_line()
 
     # Display options
@@ -99,6 +125,9 @@ def get_choice(desc = None, options = [], allow_backtracking = True, page_limit 
       current_page -= 1
       clear()
       continue
+
+    if allow_backtracking and answer.strip() == "":
+      return -1
 
     # Parse answer
     try:

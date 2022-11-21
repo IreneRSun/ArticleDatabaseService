@@ -1,7 +1,7 @@
 from store import Store
 
 # TODO: This function should be FIXED BEFORE submission.
-# For debug purposes, this function is not called and the port is assumed to be 27017 in store.py
+# For debug purposes, the port is assumed to be 27017.
 # otherwise we'd have to be prompted for the port 24/7 xd
 def ask_for_port():
   if True:
