@@ -1,39 +1,29 @@
 class ArticleSearchResult:
     def __init__(self, collection, keywords):
         self.col = collection
-        self.keywords = keywords
+        self.keywords = self.process_keywords(keywords)
         self.articles = self.retrieve()
+
+    # add double quotes to keyword string
+    def double_quotes(self, keyword):
+        return "\"" + keyword + "\""
+
+    # process keywords into a string for searching
+    def process_keywords(self, keywords):
+        processed = map(self.double_quotes, keywords)
+        processed = " ".join(processed)
+        return processed
 
     # retrieve all articles that match all those keywords
     def retrieve(self):
-        # create search expression
-        expr = []
-
-        # construct expression for converting the year to a string
-        convert = {
-            "$addFields": {
-                "str_year": {"$toString": "$year"}
-            }
-        }
-        expr.append(convert)
-
-        # construct expressions for each wildcard search
-        for keyword in self.keywords:
-            search = {
-                "$match": {
-                    "$or": [
-                        {"title": {"$regex": keyword, "$options": "i"}},
-                        {"authors": {"$regex": keyword, "$options": "i"}},
-                        {"abstract": {"$regex": keyword, "$options": "i"}},
-                        {"venue": {"$regex": keyword, "$options": "i"}},
-                        {"str_year": {"$regex": keyword, "$options": "i"}},
-                    ]
+        # find matches
+        matches = self.col.aggregate([{
+            "$match": {
+                "$text": {
+                    "$search": self.keywords
                 }
             }
-            expr.append(search)
-
-        # find matches
-        matches = self.col.aggregate(expr)
+        }])
 
         return list(matches)
 
@@ -76,4 +66,3 @@ class ArticleSearchResult:
             rtitle = r["title"]
             ryear = r["year"]
             print(f"id: {rid}, title: {rtitle}, year: {ryear}")
-            
