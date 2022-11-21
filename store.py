@@ -44,7 +44,10 @@ class Store:
         return
 
   def show_article_search(self):
-    pass
+    keywords = article_searcher.get_keywords()
+    if keywords == []:
+      return
+    search = ArticleSearchResults(self.collection, keywords)
 
   def show_author_search(self):
     keyword = get_keyword()
@@ -83,3 +86,16 @@ class Store:
       "id": id
     }
     self.collection.insert_one(data)
+
+# get a number from the user
+def get_num():
+    while True:
+        inp = input("Enter your input: ")
+        if inp.split() == []:
+          return -1
+        if inp.lower() == "quit":
+          quit()
+        if inp.isdigit():
+            break
+        print("Please enter a number")
+    return inp
