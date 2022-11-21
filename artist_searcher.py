@@ -83,3 +83,7 @@ class ArticleSearchResult:
             rtitle = r["title"]
             ryear = r["year"]
             print(f"id: {rid}, title: {rtitle}, year: {ryear}")
+    
+    # get length of self.articles
+    get_len(self):
+        return len(self.articles)
