@@ -28,9 +28,6 @@ def load_json():
   
   dblp.drop()
 
-  # TODO: include other fields
-  dblp.create_index(name="text_search", keys=[("authors", TEXT)])
-
   start_time = time()
 
   current_batch = []
@@ -44,6 +41,10 @@ def load_json():
 
   if len(current_batch) > 0:
     dblp.insert_many(current_batch)
+
+  
+  # TODO: include other fields
+  dblp.create_index(name="text_search", keys=[("authors", TEXT)])
 
   seconds_to_construct = math.ceil(time() - start_time)
   print(f"Document store constructed in {seconds_to_construct}s!")
