@@ -1,3 +1,11 @@
+# get keywords from user
+def get_keywords():
+    print("Enter keywords to search for")
+    print("Otherwise, to cancel this action, enter a blank line")
+    keywords = input("Enter input: ")
+    keywords = keywords.split()
+    return keywords
+
 class ArticleSearchResult:
     def __init__(self, collection, keywords):
         self.col = collection
