@@ -44,10 +44,17 @@ class Store:
         return
 
   def show_article_search(self):
+    # get keywords
     keywords = article_searcher.get_keywords()
     if keywords == []:
       return
+    # get matches
     search = ArticleSearchResults(self.collection, keywords)
+    search.display_articles()
+    # allow user to select an article
+    num = self.get_num(limit=search.get_len())
+    if num != -1:
+      search.select_article(num)
 
   def show_author_search(self):
     keyword = get_keyword()
