@@ -21,6 +21,12 @@ class PaginationData:
     assert self.has_prev_page()
     self.page -= 1
 
+  def get_option_index(self, choice):
+    assert choice >= 0 and choice < len(self.get_options())
+    if self.page_limit == None:
+      return choice
+    return self.page * self.page_limit + choice
+
   def get_options(self):
     if self.page_limit == None:
       return self.options
@@ -60,6 +66,16 @@ def display_line():
   print("-" * 80)
 
 def show_list(desc = None, options = [], page_limit = None):
+  """
+    Utility function to quickly list options with pagination support.
+
+    desc: Optional text to display before listing items
+    options: List of strings to list
+    page_limit: Optional limit of options to show per page (this does not include the back option if allow_backtracking is True)
+
+    Example usage:
+    show_list(desc="Look at these items!", options=["a", "b", "c"])
+  """
   clear()
 
   pagination = PaginationData(options=options, page_limit=page_limit)
@@ -107,7 +123,7 @@ def get_choice(desc = None, options = [], allow_backtracking = True, page_limit 
     page_limit: Optional limit of options to show per page (this does not include the back option if allow_backtracking is True)
 
     Example usage:
-    chosen_index = get_choice("Choose an option!", ["a", "b", "c"])
+    chosen_index = get_choice(desc="Choose an option!", options=["a", "b", "c"], page_limit=2)
   """
   
   # Edgecase where there are no options to choose and we are unable to backtrack leading to
@@ -115,40 +131,19 @@ def get_choice(desc = None, options = [], allow_backtracking = True, page_limit 
   assert len(options) > 0 or allow_backtracking
   clear()
   
-  current_page = 0
+  pagination = PaginationData(options=options, page_limit=10)
   while True:
     if desc != None:
       print(desc)
 
-    # Pagination setup
-    in_need_of_pagination = page_limit != None
-    is_on_first_page = current_page == 0  # Hide prev option
-    is_on_last_page = (not in_need_of_pagination) # Calculated later if pagination is needed but used to hide next option
-
     # Retrieve options to be displayed
-    if page_limit == None:
-      # List all options without pagination
-      displayed_options = options
-    else:
-      # Pagination is required
-      start_option_index = (current_page * page_limit)
-      end_option_index = (((current_page + 1) * page_limit))
-      displayed_options = options[start_option_index:end_option_index]
+    displayed_options = pagination.get_options()
 
-      # Case scenario in which multiple pages are needed, list instructions
-      if len(displayed_options) != len(options):
-        # We will be using prev or next since not all options are displayed
-        in_need_of_pagination = True
-
-        # Should we display the next option?
-        if end_option_index < len(options):
-          print("Type next to retrieve the next page")
-        else:
-          is_on_last_page = True # Hide next option
-
-        # Should we display the prev option?
-        if current_page > 0:
-          print("Type prev to retrieve the prev page")
+    # Should we display the next/prev option?
+    if pagination.has_next_page():
+      print("Type next to retrieve the next page")
+    if pagination.has_prev_page():
+      print("Type prev to retrieve the prev page")
 
     if allow_backtracking:
       print("Enter a blank line or select the back option to go to the previous menu")
@@ -171,12 +166,12 @@ def get_choice(desc = None, options = [], allow_backtracking = True, page_limit 
     answer = input()
 
     # Handle pagination requests
-    if answer == "next" and in_need_of_pagination and (not is_on_last_page):
-      current_page += 1
+    if answer == "next" and pagination.has_next_page():
+      pagination.next_page()
       clear()
       continue
-    elif answer == "prev" and in_need_of_pagination and (not is_on_first_page):
-      current_page -= 1
+    elif answer == "prev" and pagination.has_prev_page():
+      pagination.prev_page()
       clear()
       continue
 
@@ -207,14 +202,7 @@ def get_choice(desc = None, options = [], allow_backtracking = True, page_limit 
     else:
       # If the user has chosen a selection
       chosen_display_index = answer - 1
-
-      # Handle pages
-      if page_limit != None:
-        # Return chosen_display_index with page offset
-        return (page_limit * current_page) + chosen_display_index
-      else:
-        # No page offset present, return index chosen
-        return chosen_display_index
+      return pagination.get_option_index(chosen_display_index)
     
 
 def clear():
