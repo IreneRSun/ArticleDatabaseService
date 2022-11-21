@@ -44,7 +44,7 @@ def load_json():
 
   
   # TODO: include other fields
-  dblp.create_index(name="text_search", keys=[("authors", TEXT)])
+  dblp.create_index(name="text_search", keys=[("authors", TEXT)], default_language="none", language_override="none")
 
   seconds_to_construct = math.ceil(time() - start_time)
   print(f"Document store constructed in {seconds_to_construct}s!")
