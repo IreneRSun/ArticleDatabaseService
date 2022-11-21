@@ -1,5 +1,5 @@
 from utils import get_choice, get_collection, get_keyword
-from author_search import AuthorSearchQuery
+from author_searcher import AuthorSearchResults
 import uuid
 
 class Store:
@@ -49,7 +49,7 @@ class Store:
   def show_author_search(self):
     keyword = get_keyword()
     if keyword != None:
-      query = AuthorSearchQuery(self.collection, keyword)
+      query = AuthorSearchResults(self.collection, keyword)
       query.display_results()
 
   def show_list_venues(self):

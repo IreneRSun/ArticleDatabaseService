@@ -1,7 +1,7 @@
 import re
 from utils import show_list, get_choice
 
-class AuthorSearchQuery:
+class AuthorSearchResults:
   def __init__(self, collection, keyword):
     self.collection = collection
     self.keyword = keyword
@@ -23,8 +23,7 @@ class AuthorSearchQuery:
       },
       { # ensure the author should match the filter and is not based on the other fields
         "$match": {
-          # ensure that the results listed have the author name and aren't matching it based off of some other text index field
-          "authors": re.compile(f".*{keyword}.*", re.IGNORECASE)
+          "authors": re.compile(f".*( |-){keyword}( |-|$)", flags=(re.IGNORECASE))
         }
       },
       { # group by authors and count the publications they appear in
@@ -43,13 +42,13 @@ class AuthorSearchQuery:
     for row in results:
       authors.append(row["_id"])
       displayed_options.append(f"{row['_id']} ({row['count']} publications)")
-
+      
     self.authors = authors
     self.displayed_options = displayed_options
 
   def display_results(self):
     # ask for author they want to select
-    choice = get_choice(desc="What author would you like to know more about?", options=self.displayed_options, page_limit=10)
+    choice = get_choice(desc=f"Search results for {self.keyword}:", options=self.displayed_options, page_limit=10)
 
     # If the user wants to go back
     if choice == -1:
