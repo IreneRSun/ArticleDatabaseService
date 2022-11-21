@@ -1,5 +1,6 @@
 from utils import get_collection
 from time import time
+from pymongo import TEXT
 import math
 import json
 
@@ -26,6 +27,9 @@ def load_json():
     quit()
   
   dblp.drop()
+
+  # TODO: include other fields
+  dblp.create_index(name="text_search", keys=[("authors", TEXT)])
 
   start_time = time()
 
