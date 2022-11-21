@@ -43,20 +43,23 @@ class AuthorSearchResults:
     for row in results:
       authors.append(row["_id"])
       displayed_options.append(f"{row['_id']} ({row['count']} publications)")
-      
+
+    # store for display_results usage
     self.authors = authors
     self.displayed_options = displayed_options
 
   def display_results(self):
     # ask for author they want to select
-    choice = get_choice(desc=f"Search results for {self.keyword}:", options=self.displayed_options, page_limit=10)
+    choice = get_choice(desc=f"Search results for {self.keyword} ({len(self.authors)} in total)", options=self.displayed_options, page_limit=10)
 
     # If the user wants to go back
     if choice == -1:
       return
     
+    # retrieve the author chosen
     author = self.authors[choice]
     
+    # find all publications by this author
     results = self.collection.aggregate([
       { # speeds up querying. the match query below ensures that the same publications as the above query are returned.
         "$match": {
@@ -72,12 +75,12 @@ class AuthorSearchResults:
           "authors": author
         }
       },
-      {
+      { # sort in desc by year
         "$sort": {
           "year": -1
         }
       },
-      {
+      { # return the title, year, and venue. thanks mongodb!!
         "$project": {
           "title": 1,
           "year": 1,
@@ -86,8 +89,10 @@ class AuthorSearchResults:
       }
     ])
     
+    # display result
     displayed_results = []
     for row in results:
       displayed_results.append(f"{row['title']} (Venue: {row['venue']}) (Published {row['year']})")
 
+    # show list.
     show_list(desc=f"Articles published by {author} ({len(displayed_results)} in total)", options=displayed_results, page_limit=10)

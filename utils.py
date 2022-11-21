@@ -1,6 +1,34 @@
 import os
 import pymongo
 
+class PaginationData:
+  def __init__(self, options = [], page_limit = None):
+    self.options = options
+    self.page_limit = page_limit
+    self.page = 0
+
+  def has_next_page(self):
+    return (self.page_limit != None) and (len(self.get_options()) == self.page_limit) and (self.page * self.page_limit < len(self.options))
+
+  def has_prev_page(self):
+    return self.page > 0
+
+  def next_page(self):
+    assert self.has_next_page()
+    self.page += 1
+
+  def prev_page(self):
+    assert self.has_prev_page()
+    self.page -= 1
+
+  def get_options(self):
+    if self.page_limit == None:
+      return self.options
+
+    start_option_index = (self.page * self.page_limit)
+    end_option_index = (((self.page + 1) * self.page_limit))
+    return self.options[start_option_index:end_option_index]
+
 def get_collection(port):
   """
     Utility function to acquire MongoDB connection.
@@ -34,10 +62,36 @@ def display_line():
 def show_list(desc = None, options = [], page_limit = None):
   clear()
 
-  current_page = 0
+  pagination = PaginationData(options=options, page_limit=page_limit)
   while True:
     if desc != None:
       print(desc)
+    
+    displayed_options = pagination.get_options()
+
+    if pagination.has_next_page():
+      print("Type next to retrieve the next page")
+    if pagination.has_prev_page():
+      print("Type prev to retrieve the prev page")
+    print("Enter a blank line to go to the previous menu")
+    display_line()
+
+    for line in displayed_options:
+      print(line)
+
+    # Get user input
+    answer = input()
+    
+    clear()
+    if answer == "next" and pagination.has_next_page():
+      pagination.next_page()
+      continue
+    elif answer == "prev" and pagination.has_prev_page():
+      pagination.prev_page()
+      continue
+
+    if answer.strip() == "":
+      return
 
 def get_choice(desc = None, options = [], allow_backtracking = True, page_limit = None):
   """
