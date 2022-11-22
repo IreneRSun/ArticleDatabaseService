@@ -1,6 +1,6 @@
 from utils import get_choice, get_collection, get_keyword
 from author_searcher import AuthorSearchResults
-from article_searcher import ArticleSearchResults
+import article_searcher
 import uuid
 
 class Store:
@@ -50,7 +50,7 @@ class Store:
     if keywords == []:
       return
     # get matches
-    search = ArticleSearchResults(self.collection, keywords)
+    search = article_searcher.ArticleSearchResults(self.collection, keywords)
     search.display_articles()
     # allow user to select an article
     num = self.get_num(limit=search.get_len())
