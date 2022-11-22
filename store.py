@@ -54,6 +54,7 @@ class Store:
         search = article_searcher.ArticleSearchResults(self.collection, keywords)
         search.display_articles()
         # allow user to select an article
+        print("Select an article to see more information")
         num = get_num(limit=search.get_len())
         if num != -1:
             search.select_article(num)
@@ -106,7 +107,7 @@ def get_num(limit=float("inf")):
         if inp.lower() == "quit":
             quit()
         if inp.isdigit():
-            if 0 < int(inp) < limit:
+            if 0 < int(inp) <= limit:
                 break
         print("Please enter a valid number")
     return inp
