@@ -53,10 +53,12 @@ class Store:
         # get matches
         search = article_searcher.ArticleSearchResults(self.collection, keywords)
         search.display_articles()
-        # allow user to select an article
-        print("Select an article to see more information")
-        num = get_num(limit=search.get_len())
-        if num != -1:
+        # allow user to select articles
+        while True:
+            print("To select an article to see more information, enter the match number")
+            num = get_num(limit=search.get_len())
+            if num == -1:
+                break
             search.select_article(num)
 
     def show_author_search(self):
