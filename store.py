@@ -1,5 +1,6 @@
 from utils import get_choice, get_collection, get_keyword
 from author_searcher import AuthorSearchResults
+from article_searcher import ArticleSearchResults
 import uuid
 
 class Store:
