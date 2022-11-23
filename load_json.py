@@ -42,7 +42,7 @@ def load_json():
   importProc = subprocess.Popen(f"mongoimport --collection=dblp --file={file} --port {port} --numInsertionWorkers={IMPORT_WORKERS} --batchSize {IMPORT_BATCH_SIZE} --db 291db", shell=True, stdout=subprocess.PIPE)
   importProc.wait()
 
-  # convert year to int
+  # convert year to string
   dblp.aggregate([
     {
       "$addFields": {
