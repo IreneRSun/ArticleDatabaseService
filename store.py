@@ -6,7 +6,7 @@ class Store:
   def __init__(self, port):
     # Acquire MongoDB collection
     try:
-      self.collection = get_collection(port)
+      self.collection = get_collection("dblp", port)
     except Exception as err:
       print("Failed to establish MongoDB collection while constructing store!", err)
       quit()

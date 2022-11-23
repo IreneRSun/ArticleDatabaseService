@@ -24,7 +24,7 @@ class AuthorSearchResults:
       { # ensure the author should match the filter and is not based on the other fields
         "$match": {
           # Allow "firstname KEYWORD lastname" or like "KEYWORD-random lastname" etc etc but not partial matches
-          "authors": re.compile(f".*( |-){keyword}( |-|$)", flags=(re.IGNORECASE))
+          "authors": re.compile(f".*(^| |-){keyword}( |-|\\.|$)", flags=(re.IGNORECASE))
         }
       },
       { # group by authors and count the publications they appear in

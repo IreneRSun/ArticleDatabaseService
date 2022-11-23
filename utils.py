@@ -43,13 +43,13 @@ class PaginationData:
     end_option_index = (((self.page + 1) * self.page_limit))
     return self.options[start_option_index:end_option_index]
 
-def get_collection(port):
+def get_collection(name, port):
   """ Utility function to acquire MongoDB connection. """
   client = pymongo.MongoClient("localhost", port, serverSelectionTimeoutMS = 2000)
   client.server_info()
 
   database = client["291db"]
-  collection = database["dblp"]
+  collection = database[name]
 
   return collection
 
@@ -103,7 +103,7 @@ def show_list(desc = None, options = [], page_limit = None):
 
     # display options
     for line in displayed_options:
-      print(line)
+      print(f"- {line}")
 
     # Get user input
     answer = input()
