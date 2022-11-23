@@ -154,7 +154,7 @@ def load_json():
         "venue_count": {
           "$sum": "$venue_count"
         },
-        "venue_references": {
+        "publication_references": {
           "$sum": "$publication_references"
         },
         "venue": {
@@ -162,7 +162,7 @@ def load_json():
         },
       }
     },  # at this point our dataset is filled with the structure below...
-    # { "_id": "...", "venue_count": #, "venue_references": #, "venue": "..." }
+    # { "_id": "...", "venue_count": #, "publication_references": #, "venue": "..." }
     # Where _id is the publication. However, we want to find the amount of times the venue 
     # was referenced and used. NOT the publication.
 
@@ -182,7 +182,7 @@ def load_json():
       "$group": {
         "_id": "$venue",
         "venue_references": {
-          "$sum": "$venue_references"
+          "$sum": "$publication_references"
         },
         "venue_count": {
           "$sum": "$venue_count"
