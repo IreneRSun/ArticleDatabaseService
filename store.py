@@ -78,24 +78,25 @@ class Store:
         print("Enter how many venues to display")
         print("To go back, enter a blank line")
         print("To quit, enter quit")
-        n = get_num()
-        if n == -1:
-            return
-        # get the top n venues
-        top_venues = self.view.aggregate([
-            {"$sort": {"venue_references": -1}},
-            {"$limit": n}
-        ])
-        # display the info from the top venues
-        count = 1
-        for venue_info in top_venues:
-            venue = venue_info["_id"]
-            num_articles = venue_info["venue_count"]
-            num_references = venue_info["venue_references"]
-            print(f"{count} venue: {venue}, ",
-                  f"number of articles: {num_articles}, ",
-                  f"number of articles referencing venue: {num_references}")
-            count += 1
+        while True:
+            n = get_num()
+            if n == -1:
+                return
+            # get the top n venues
+            top_venues = self.view.aggregate([
+                {"$sort": {"venue_references": -1}},
+                {"$limit": n}
+            ])
+            # display the info from the top venues
+            count = 1
+            for venue_info in top_venues:
+                venue = venue_info["_id"]
+                num_articles = venue_info["venue_count"]
+                num_references = venue_info["venue_references"]
+                print(f"{count} venue: {venue}, ",
+                      f"number of articles: {num_articles}, ",
+                      f"number of articles referencing venue: {num_references}")
+                count += 1
 
     def show_add_article(self):
         # Set up data
@@ -139,4 +140,4 @@ def get_num(limit=float("inf")):
             if 0 < int(inp) <= limit:
                 break
         print("Please enter a valid number")
-    return inp
+    return int(inp)
