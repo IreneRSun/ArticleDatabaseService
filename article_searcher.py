@@ -15,7 +15,7 @@ def get_keywords():
     keywords = keywords.split()
     return keywords
 
-class ArticleSearchResult:
+class ArticleSearchResults:
     def __init__(self, collection, keywords):
         self.col = collection
         self.keywords = self.process_keywords(keywords)
@@ -85,5 +85,5 @@ class ArticleSearchResult:
             print(f"id: {rid}, title: {rtitle}, year: {ryear}")
     
     # get length of self.articles
-    get_len(self):
+    def get_len(self):
         return len(self.articles)
