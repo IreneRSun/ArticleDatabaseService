@@ -10,20 +10,6 @@ IMPORT_WORKERS = 20
 
 VENUE_MATERIALIZED_VIEW_NAME = "venue-materialized-view"
 
-# Writes a new file in which the years is marked as an string
-# this new file is then loaded by mongoimport
-# speeds up insertion process from my experiments for larrger files.
-def convert_years_to_str(f):
-  outputF = open("./tmp/data.json", "w")
-  with outputF:
-    with f:
-      for line in f:
-        data = json.loads(line.strip())
-        data["year"] = str(data["year"])
-        outputF.write(json.dumps(data))
-        outputF.write("\n")
-      
-
 def load_json():
   # Get JSON file
   file = input("Enter JSON file name: ")
@@ -53,9 +39,20 @@ def load_json():
   # # track the start time of how long it takes to finish everything.
   start_time = time()
 
-  convert_years_to_str(f)
-  importProc = subprocess.Popen(f"mongoimport --collection=dblp --file=tmp/data.json --port {port} --numInsertionWorkers={IMPORT_WORKERS} --batchSize {IMPORT_BATCH_SIZE} --db 291db", shell=True, stdout=subprocess.PIPE)
+  importProc = subprocess.Popen(f"mongoimport --collection=dblp --file={file} --port {port} --numInsertionWorkers={IMPORT_WORKERS} --batchSize {IMPORT_BATCH_SIZE} --db 291db", shell=True, stdout=subprocess.PIPE)
   importProc.wait()
+
+  # convert year to int
+  dblp.aggregate([
+    {
+      "$addFields": {
+        "year": { "$toString": "$year" }
+      }
+    },
+    {
+      "$merge": "dblp"
+    }
+  ])
 
   print(f"Finished writing all rows to database in {math.ceil(time() - start_time)}s! Running index creation...")
   
@@ -67,7 +64,7 @@ def load_json():
           ("abstract", TEXT),
           ("venue", TEXT),
           ("authors", TEXT),
-          ("years", TEXT),
+          ("year", TEXT),
       ],
       default_language='none'
   )
