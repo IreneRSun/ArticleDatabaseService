@@ -5,7 +5,9 @@ import math
 import subprocess
 import json
 
-BATCH_SIZE = 10000
+IMPORT_BATCH_SIZE = 10000
+IMPORT_WORKERS = 20
+
 VENUE_MATERIALIZED_VIEW_NAME = "venue-materialized-view"
 
 # Writes a new file in which the years is marked as an string
@@ -52,7 +54,7 @@ def load_json():
   start_time = time()
 
   convert_years_to_str(f)
-  importProc = subprocess.Popen(f"mongoimport --collection=dblp --file=tmp/data.json --port {port} --numInsertionWorkers=10 --batchSize 10000 --db 291db", shell=True, stdout=subprocess.PIPE)
+  importProc = subprocess.Popen(f"mongoimport --collection=dblp --file=tmp/data.json --port {port} --numInsertionWorkers={IMPORT_WORKERS} --batchSize {IMPORT_BATCH_SIZE} --db 291db", shell=True, stdout=subprocess.PIPE)
   importProc.wait()
 
   print(f"Finished writing all rows to database in {math.ceil(time() - start_time)}s! Running index creation...")
