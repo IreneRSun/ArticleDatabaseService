@@ -124,7 +124,7 @@ def load_json():
               # publication was referenced.
             "$group": {
               "_id": "$references",
-              "venue_references": {
+              "publication_references": {
                 "$sum": 1
               }
             }
@@ -136,14 +136,14 @@ def load_json():
               "_id": {
                 "publication": "$_id"
               },
-              "venue_references": "$venue_references"
+              "publication_references": "$publication_references"
             }
           }
         ]
       }
     },  # at this point, we have two different datasets combined filled with structures below...
         # { "_id": { "publication": "...", "venue": "..." }, "venue_count": # } and 
-        # { "_id": { "publication": "..." }, "referenced": # }
+        # { "_id": { "publication": "..." }, "publication_references": # }
 
     {   # However... we need it so that we get the amount of times a venue was referenced...
         # not how many times a publication was referenced.
@@ -155,7 +155,7 @@ def load_json():
           "$sum": "$venue_count"
         },
         "venue_references": {
-          "$sum": "$venue_references"
+          "$sum": "$publication_references"
         },
         "venue": {
           "$first": "$_id.venue"
