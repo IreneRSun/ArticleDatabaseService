@@ -12,6 +12,12 @@ class Store:
         except Exception as err:
             print("Failed to establish MongoDB collection while constructing store!", err)
             quit()
+        # Aquire MongoDB materialized view
+        try:
+            self.view = get_collection("venue-materialized-view", port)
+        except Exception as err:
+            print("Failed to establish MongoDB materialized view while constructing store!", err)
+            quit()
 
     def show_main_menu(self):
         while True:
@@ -19,7 +25,7 @@ class Store:
             chosen_choice = get_choice("What would you like to do?", [
                 "Search for articles",
                 "Search for authors",
-                "List the venues",
+                "List the top venues",
                 "Add an article",
                 "Quit"
             ], allow_backtracking=False)
@@ -68,8 +74,15 @@ class Store:
             query.display_results()
 
     def show_list_venues(self):
+        # get a number n from user
+        print("Enter how many venues to display")
+        print("To go back, enter a blank line")
+        print("To quit, enter quit")
+        n = get_num()
+        if n == -1:
+            return
         # get the top n venues
-        top_venues = view.aggregate([
+        top_venues = self.view.aggregate([
             {"$sort": {"venue_references": -1}},
             {"$limit": n}
         ])
