@@ -111,6 +111,21 @@ def load_json():
             }
           },
 
+          {   # We need to get rid of duplicate references 
+            "$unwind": {
+              "path": "$references"
+            }
+          },
+
+          {   # Reconstruct references array as a set to get rid of duplicate references
+            "$group": {
+              "_id": "$_id",
+              "references": {
+                "$addToSet": "$references"
+              }
+            }
+          },
+
           {   # extract the references array so that every reference is it's own document
             "$unwind": {
               "path": "$references"
@@ -186,7 +201,6 @@ def load_json():
         }
       }
     },
-
 
     { # Save the results in this materialized view
       "$merge": VENUE_MATERIALIZED_VIEW_NAME
