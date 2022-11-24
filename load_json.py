@@ -111,21 +111,6 @@ def load_json():
             }
           },
 
-          {   # We need to get rid of duplicate references 
-            "$unwind": {
-              "path": "$references"
-            }
-          },
-
-          {   # Reconstruct references array as a set to get rid of duplicate references
-            "$group": {
-              "_id": "$_id",
-              "references": {
-                "$addToSet": "$references"
-              }
-            }
-          },
-
           {   # extract the references array so that every reference is it's own document
             "$unwind": {
               "path": "$references"
@@ -136,9 +121,9 @@ def load_json():
               # publication was referenced.
             "$group": {
               "_id": "$references",
-              "publication_references": {
-                "$sum": 1
-              }
+              "publications_referencing_publication": { # store in an array the publications that
+                "$push": "$id"                          # reference this reference for later on.
+              },
             }
           },  # we have a list of every publication that is referenced and how often they are referenced.
 
@@ -148,14 +133,14 @@ def load_json():
               "_id": {
                 "publication": "$_id"
               },
-              "publication_references": "$publication_references"
+              "publications_referencing_publication": "$publications_referencing_publication",
             }
           }
         ]
       }
     },  # at this point, we have two different datasets combined filled with structures below...
         # { "_id": { "publication": "...", "venue": "..." }, "venue_count": # } and 
-        # { "_id": { "publication": "..." }, "publication_references": # }
+        # { "_id": { "publication": "..." }, "publications_referencing_publication": ["...", ...] }
 
     {   # However... we need it so that we get the amount of times a venue was referenced...
         # not how many times a publication was referenced.
@@ -166,15 +151,15 @@ def load_json():
         "venue_count": {
           "$sum": "$venue_count"
         },
-        "publication_references": {
-          "$sum": "$publication_references"
+        "publications_referencing_publication": {
+          "$first": "$publications_referencing_publication"
         },
         "venue": {
           "$first": "$_id.venue"
         },
       }
     },  # at this point our dataset is filled with the structure below...
-    # { "_id": "...", "venue_count": #, "publication_references": #, "venue": "..." }
+    # { "_id": "...", "venue_count": #, "publications_referencing_publication": ["...", ...], "venue": "..." }
     # Where _id is the publication. However, we want to find the amount of times the venue 
     # was referenced and used. NOT the publication.
 
@@ -190,14 +175,51 @@ def load_json():
     },
 
     { # Finally, we group all the publications by venue instead.
-      # giving us our desired: venue count and times the venue was referenced
       "$group": {
         "_id": "$venue",
-        "venue_references": {
-          "$sum": "$publication_references"
-        },
         "venue_count": {
           "$sum": "$venue_count"
+        },
+        "array_of_publications_referencing_venue": { # create array of array of publications that ref this venue
+          "$push": "$publications_referencing_publication"
+        }
+      }
+    },
+
+    { # Convert 2D array to 1D array
+      "$set": {
+        "publications_referencing_venue": {
+          "$reduce": {
+            "input": "$array_of_publications_referencing_venue",
+            "initialValue": [],
+            "in": {
+              "$concatArrays": ["$$value", "$$this"]
+            }
+          }
+        }
+      }
+    },
+
+    { # We need to filter out duplicate publication origins.
+      "$unwind": {
+        "path": "$publications_referencing_venue"
+      }
+    },
+
+    { # convert array to set.
+      "$group": {
+        "_id": "$_id",
+        "publications_referencing_venue": {
+          "$addToSet": "$publications_referencing_venue"
+        },
+        "venue_count": { "$first": "$venue_count" }
+      }
+    },
+
+    { # we now have the venue_references
+      "$set": {
+        "venue_references": {
+          "$size": "$publications_referencing_venue"
         }
       }
     },
