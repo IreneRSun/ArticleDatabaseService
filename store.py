@@ -1,6 +1,6 @@
-from utils import get_choice, get_collection, get_keyword
+from utils import get_choice, get_collection, get_keyword, get_keywords, get_num
 from author_searcher import AuthorSearchResults
-import article_searcher
+from article_searcher import ArticleSearchResults
 import uuid
 
 
@@ -52,12 +52,14 @@ class Store:
                 return
 
     def show_article_search(self):
+        print("To go back, enter a blank line")
+        print("To quit, enter quit")
         # get keywords
-        keywords = article_searcher.get_keywords()
+        keywords = get_keywords()
         if not keywords:
             return
         # get matches
-        search = article_searcher.ArticleSearchResults(self.collection, keywords)
+        search = ArticleSearchResults(self.collection, keywords)
         search.display_articles()
         # allow user to select articles
         while True:
@@ -75,9 +77,9 @@ class Store:
 
     def show_list_venues(self):
         # get a number n from user
-        print("Enter how many venues to display")
         print("To go back, enter a blank line")
         print("To quit, enter quit")
+        print("Otherwise, enter how many venues to display")
         while True:
             n = get_num()
             if n == -1:
@@ -126,18 +128,3 @@ class Store:
             "id": id
         }
         self.collection.insert_one(data)
-
-
-# get a number from the user
-def get_num(limit=float("inf")):
-    while True:
-        inp = input("Enter your input: ")
-        if not inp.split():
-            return -1
-        if inp.lower() == "quit":
-            quit()
-        if inp.isdigit():
-            if 0 < int(inp) <= limit:
-                break
-        print("Please enter a valid number")
-    return int(inp)

@@ -1,20 +1,3 @@
-import os
-
-# get keywords from user
-def get_keywords():
-    # print instructions
-    print("Enter keywords to search for")
-    print("Otherwise, to cancel this action, enter a blank line")
-    print("If you wish to quit the program, enter quit")
-    # get keywords
-    keywords = input("Enter input: ")
-    # check if the keyword is quit
-    if keywords.lower() == "quit":
-        quit()
-    # return keywords
-    keywords = keywords.split()
-    return keywords
-
 class ArticleSearchResults:
     def __init__(self, collection, keywords):
         self.col = collection
@@ -23,7 +6,7 @@ class ArticleSearchResults:
 
     # add double quotes to keyword string
     def double_quotes(self, keyword):
-        return "\"" + keyword + "\""
+        return f"\"{keyword}\""
 
     # process keywords into a string for searching
     def process_keywords(self, keywords):

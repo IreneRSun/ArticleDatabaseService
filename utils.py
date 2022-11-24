@@ -69,6 +69,32 @@ def get_keyword():
 
     return parts[0]
 
+def get_keywords():
+  """Retrieve multiple keywords from the user. """
+  clear()
+  # get keywords
+  keywords = input("Enter keywords to search for: ")
+  # check if the keyword is quit
+  if keywords.lower() == "quit":
+    quit()
+  # return keywords
+  keywords = keywords.split()
+  return keywords
+
+def get_num(limit=float("inf")):
+  """Get a number greater than 0 and less than or equal to the limit from the user"""
+  while True:
+    inp = input("Enter your input: ")
+    if not inp.split():
+      return -1
+    if inp.lower() == "quit":
+      quit()
+    if inp.isdigit():
+      if 0 < int(inp) <= limit:
+        break
+      print("Please enter a valid number")
+  return int(inp)
+
 def display_line():
   print("-" * 80)
 
