@@ -231,7 +231,7 @@ def load_json():
   
   seconds_to_construct = math.ceil(time() - start_time)
   print(f"Document store constructed and precomputations computed in {seconds_to_construct}s!")
-  
+  return port
       
 if __name__ == "__main__":
   load_json()
